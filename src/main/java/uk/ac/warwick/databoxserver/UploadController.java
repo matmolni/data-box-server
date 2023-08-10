@@ -58,7 +58,6 @@ public class UploadController {
      */
     @PostMapping("/upload-csv")
     public ResponseEntity<String> uploadCSVFile(@RequestParam("dataset-csv") MultipartFile file) {
-        //TODO: add error handling for invalid CSV files
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
 
@@ -113,36 +112,66 @@ public class UploadController {
                 datapoint.setRelativeTimestamp(Long.parseLong(record.get("relativeTimestamp")));
 
                 //recorded data points parsed from the CSV
-                datapoint.setLap(Integer.parseInt(record.get("lap")));
-                datapoint.setGpsPosition(new PGpoint(Double.parseDouble(record.get("gpsPositionX")), Double.parseDouble(record.get("gpsPositionY"))));
-                datapoint.setGpsSpeed(Float.parseFloat(record.get("gpsSpeed")));
-                datapoint.setSAS(Float.parseFloat(record.get("sas")));
-                datapoint.setAPPS(Float.parseFloat(record.get("apps")));
-                datapoint.setBrakePressure(Float.parseFloat(record.get("brakePressure")));
-                datapoint.setWheelSpeedFL(Float.parseFloat(record.get("wheelSpeedFL")));
-                datapoint.setWheelSpeedFR(Float.parseFloat(record.get("wheelSpeedFR")));
-                datapoint.setWheelSpeedRL(Float.parseFloat(record.get("wheelSpeedRL")));
-                datapoint.setWheelSpeedRR(Float.parseFloat(record.get("wheelSpeedRR")));
-                datapoint.setTyrePressureFL(Float.parseFloat(record.get("tyrePressureFL")));
-                datapoint.setTyrePressureFR(Float.parseFloat(record.get("tyrePressureFR")));
-                datapoint.setTyrePressureRL(Float.parseFloat(record.get("tyrePressureRL")));
-                datapoint.setTyrePressureRR(Float.parseFloat(record.get("tyrePressureRR")));
-                datapoint.setTyreTempFL(Float.parseFloat(record.get("tyreTempFL")));
-                datapoint.setTyreTempFR(Float.parseFloat(record.get("tyreTempFR")));
-                datapoint.setTyreTempRL(Float.parseFloat(record.get("tyreTempRL")));
-                datapoint.setTyreTempRR(Float.parseFloat(record.get("tyreTempRR")));
-                datapoint.setTyreTempSurfaceFL(Float.parseFloat(record.get("tyreTempSurfaceFL")));
-                datapoint.setTyreTempSurfaceFR(Float.parseFloat(record.get("tyreTempSurfaceFR")));
-                datapoint.setTyreTempSurfaceRL(Float.parseFloat(record.get("tyreTempSurfaceRL")));
-                datapoint.setTyreTempSurfaceRR(Float.parseFloat(record.get("tyreTempSurfaceRR")));
-                datapoint.setSuspensionTravelFL(Float.parseFloat(record.get("suspensionTravelFL")));
-                datapoint.setSuspensionTravelFR(Float.parseFloat(record.get("suspensionTravelFR")));
-                datapoint.setSuspensionTravelRL(Float.parseFloat(record.get("suspensionTravelRL")));
-                datapoint.setSuspensionTravelRR(Float.parseFloat(record.get("suspensionTravelRR")));
-                datapoint.setSscErr(Boolean.valueOf(record.get("sscErr")));
-                datapoint.setImdErr(Boolean.valueOf(record.get("imdErr")));
-                datapoint.setInvErr(Boolean.valueOf(record.get("invErr")));
-                datapoint.setBatErr(Boolean.valueOf(record.get("batErr")));
+                if (record.isMapped("lap"))
+                    datapoint.setLap(Integer.parseInt(record.get("lap")));
+                if (record.isMapped("gpsPositionX") && record.isMapped("gpsPositionY"))
+                    datapoint.setGpsPosition(new PGpoint(Double.parseDouble(record.get("gpsPositionX")), Double.parseDouble(record.get("gpsPositionY"))));
+                if (record.isMapped("gpsSpeed"))
+                    datapoint.setGpsSpeed(Float.parseFloat(record.get("gpsSpeed")));
+                if (record.isMapped("sas"))
+                    datapoint.setSAS(Float.parseFloat(record.get("sas")));
+                if (record.isMapped("apps"))
+                    datapoint.setAPPS(Float.parseFloat(record.get("apps")));
+                if (record.isMapped("brakePressure"))
+                    datapoint.setBrakePressure(Float.parseFloat(record.get("brakePressure")));
+                if (record.isMapped("wheelSpeedFL"))
+                    datapoint.setWheelSpeedFL(Float.parseFloat(record.get("wheelSpeedFL")));
+                if (record.isMapped("wheelSpeedFR"))
+                    datapoint.setWheelSpeedFR(Float.parseFloat(record.get("wheelSpeedFR")));
+                if (record.isMapped("wheelSpeedRL"))
+                    datapoint.setWheelSpeedRL(Float.parseFloat(record.get("wheelSpeedRL")));
+                if (record.isMapped("wheelSpeedRR"))
+                    datapoint.setWheelSpeedRR(Float.parseFloat(record.get("wheelSpeedRR")));
+                if (record.isMapped("tyrePressureFL"))
+                    datapoint.setTyrePressureFL(Float.parseFloat(record.get("tyrePressureFL")));
+                if (record.isMapped("tyrePressureRL"))
+                    datapoint.setTyrePressureRL(Float.parseFloat(record.get("tyrePressureRL")));
+                if (record.isMapped("tyrePressureFR"))
+                    datapoint.setTyrePressureFR(Float.parseFloat(record.get("tyrePressureFR")));
+                if (record.isMapped("tyrePressureRR"))
+                    datapoint.setTyrePressureRR(Float.parseFloat(record.get("tyrePressureRR")));
+                if (record.isMapped("tyreTempFL"))
+                    datapoint.setTyreTempFL(Float.parseFloat(record.get("tyreTempFL")));
+                if (record.isMapped("tyreTempFR"))
+                    datapoint.setTyreTempFR(Float.parseFloat(record.get("tyreTempFR")));
+                if (record.isMapped("tyreTempRL"))
+                    datapoint.setTyreTempRL(Float.parseFloat(record.get("tyreTempRL")));
+                if (record.isMapped("tyreTempRR"))
+                    datapoint.setTyreTempRR(Float.parseFloat(record.get("tyreTempRR")));
+                if (record.isMapped("tyreTempSurfaceFL"))
+                    datapoint.setTyreTempSurfaceFL(Float.parseFloat(record.get("tyreTempSurfaceFL")));
+                if (record.isMapped("tyreTempSurfaceFR"))
+                    datapoint.setTyreTempSurfaceFR(Float.parseFloat(record.get("tyreTempSurfaceFR")));
+                if (record.isMapped("tyreTempSurfaceRL"))
+                    datapoint.setTyreTempSurfaceRL(Float.parseFloat(record.get("tyreTempSurfaceRL")));
+                if (record.isMapped("tyreTempSurfaceRR"))
+                    datapoint.setTyreTempSurfaceRR(Float.parseFloat(record.get("tyreTempSurfaceRR")));
+                if (record.isMapped("suspensionTravelFL"))
+                    datapoint.setSuspensionTravelFL(Float.parseFloat(record.get("suspensionTravelFL")));
+                if (record.isMapped("suspensionTravelFR"))
+                    datapoint.setSuspensionTravelFR(Float.parseFloat(record.get("suspensionTravelFR")));
+                if (record.isMapped("suspensionTravelRL"))
+                    datapoint.setSuspensionTravelRL(Float.parseFloat(record.get("suspensionTravelRL")));
+                if (record.isMapped("suspensionTravelRR"))
+                    datapoint.setSuspensionTravelRR(Float.parseFloat(record.get("suspensionTravelRR")));
+                if (record.isMapped("sscErr"))
+                    datapoint.setSscErr(Boolean.valueOf(record.get("sscErr")));
+                if (record.isMapped("imdErr"))
+                    datapoint.setImdErr(Boolean.valueOf(record.get("imdErr")));
+                if (record.isMapped("invErr"))
+                    datapoint.setInvErr(Boolean.valueOf(record.get("invErr")));
+                if (record.isMapped("batErr"))
+                    datapoint.setBatErr(Boolean.valueOf(record.get("batErr")));
 
                 datapointRepo.save(datapoint);
 
@@ -158,5 +187,4 @@ public class UploadController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process CSV file");
         }
     }
-
 }
