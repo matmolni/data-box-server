@@ -108,8 +108,14 @@ public class UploadController {
                 datapoint.setSessionForeignKey(datasetId);
 
                 //absolute and relative time calculated using the dataset metadata recording start time
-                datapoint.setAbsoluteTimestamp(new Timestamp(Long.parseLong(record.get("relativeTimestamp")) + timestamp.getTime()));
-                datapoint.setRelativeTimestamp(Long.parseLong(record.get("relativeTimestamp")));
+                try {
+                    datapoint.setAbsoluteTimestamp(new Timestamp(Long.parseLong(record.get("relativeTimestamp")) + timestamp.getTime()));
+                    datapoint.setRelativeTimestamp(Long.parseLong(record.get("relativeTimestamp")));
+                }
+                catch (IllegalArgumentException e) {
+                    LOGGER.warning("Timestamp not found in CSV file");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CSV file does not contain a timestamp");
+                }
 
                 //recorded data points parsed from the CSV
                 if (record.isMapped("lap"))
