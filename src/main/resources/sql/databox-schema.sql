@@ -1,8 +1,8 @@
-CREATE SCHEMA display_data;
+CREATE SCHEMA logger_data;
 
-ALTER SCHEMA display_data OWNER TO postgres;
+ALTER SCHEMA logger_data OWNER TO postgres;
 
-CREATE TABLE display_data.datasets
+CREATE TABLE logger_data.dataset
 (
     identifier   SERIAL PRIMARY KEY,
     session_name TEXT,
@@ -10,7 +10,7 @@ CREATE TABLE display_data.datasets
     timestamp    TIMESTAMP
 );
 
-CREATE TABLE display_data.datapoints
+CREATE TABLE logger_data.datapoint
 (
     session_foreign_key  INTEGER NOT NULL,
     absolute_timestamp   TIMESTAMP,
@@ -45,7 +45,7 @@ CREATE TABLE display_data.datapoints
     imd_err              BOOLEAN,
     inv_err              BOOLEAN,
     bat_err              BOOLEAN,
-    FOREIGN KEY (session_foreign_key) REFERENCES display_data.datasets (identifier),
+    FOREIGN KEY (session_foreign_key) REFERENCES logger_data.dataset (identifier),
     PRIMARY KEY (session_foreign_key, relative_timestamp)
 );
 
