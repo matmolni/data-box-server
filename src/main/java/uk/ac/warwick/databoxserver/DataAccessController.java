@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.ac.warwick.databoxserver.models.DatalogRecord;
 import uk.ac.warwick.databoxserver.models.Dataset;
+import uk.ac.warwick.databoxserver.repositories.DatalogRepository;
 import uk.ac.warwick.databoxserver.repositories.DatapointRepository;
 import uk.ac.warwick.databoxserver.repositories.DatasetRepository;
 
@@ -23,11 +26,13 @@ public class DataAccessController {
 
     private final DatasetRepository datasetRepository;
     private final DatapointRepository datapointRepository;
+    private final DatalogRepository datalogRepository;
 
     @Autowired
-    public DataAccessController(DatasetRepository datasetRepository, DatapointRepository datapointRepository) {
+    public DataAccessController(DatasetRepository datasetRepository, DatapointRepository datapointRepository, DatalogRepository datalogRepository) {
         this.datasetRepository = datasetRepository;
         this.datapointRepository = datapointRepository;
+        this.datalogRepository = datalogRepository;
     }
 
     /**
@@ -43,5 +48,27 @@ public class DataAccessController {
 
         return ResponseEntity.ok()
                 .body(datasets);
+    }
+
+    /**
+     * Endpoint that returns a list corresponding to one datasource of each datapoint in the specified dataset.
+     * @param datasetId id of the dataset to get datapoints from
+     * @param dataSource datasource to get datapoints from
+     * @return datalog list of records
+     */
+    @GetMapping("/datalog")
+    public ResponseEntity<ArrayList<DatalogRecord>> getDatalog(@RequestParam int datasetId,
+                                                               @RequestParam String dataSource) {
+
+        //TODO: error handling for invalid or null datasetId and dataSource
+
+        ArrayList<DatalogRecord> datalogRecord;
+
+        //query the database for the list of datasets using the DatasetRepository
+        datalogRecord = (ArrayList<DatalogRecord>) datalogRepository.findDatalogOfDataSourceOfDataset(datasetId,
+                dataSource);
+
+        return ResponseEntity.ok()
+                .body(datalogRecord);
     }
 }
