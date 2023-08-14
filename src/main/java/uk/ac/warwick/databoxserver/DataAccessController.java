@@ -1,7 +1,9 @@
 package uk.ac.warwick.databoxserver;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,16 +59,20 @@ public class DataAccessController {
      * @return datalog list of records
      */
     @GetMapping("/datalog")
-    public ResponseEntity<ArrayList<DatalogRecord>> getDatalog(@RequestParam int datasetId,
-                                                               @RequestParam String dataSource) {
-
-        //TODO: error handling for invalid or null datasetId and dataSource
+    public ResponseEntity<?> getDatalog(@RequestParam @NonNull int datasetId,
+                                                               @RequestParam @NonNull String dataSource) {
 
         ArrayList<DatalogRecord> datalogRecord;
 
         //query the database for the list of datasets using the DatasetRepository
-        datalogRecord = (ArrayList<DatalogRecord>) datalogRepository.findDatalogOfDataSourceOfDataset(datasetId,
-                dataSource);
+        try {
+            datalogRecord = (ArrayList<DatalogRecord>)
+                    datalogRepository.findDatalogOfDataSourceOfDataset(datasetId, dataSource);
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid dataSource: '" + dataSource + "' " +
+                    "Please check that the requested dataSource is a valid column of the database");
+        }
 
         return ResponseEntity.ok()
                 .body(datalogRecord);

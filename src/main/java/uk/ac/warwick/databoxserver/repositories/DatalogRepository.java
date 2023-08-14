@@ -30,9 +30,20 @@ public class DatalogRepository {
      * @param dataSource the name of the data source to retrieve data from
      * @return the list of all datalog records for a given dataset and data source
      */
-    public List<DatalogRecord> findDatalogOfDataSourceOfDataset(int datasetId, String dataSource) {
-        //TODO: Check dataSource String for SQL injection. Current implementation with string concatenation is very
-        // unsafe. Need to verify that the string contained in dataSource is a valid column name of the database.
+    public List<DatalogRecord> findDatalogOfDataSourceOfDataset(int datasetId, String dataSource) throws  IllegalArgumentException {
+
+        //verify that the requested dataSource is a valid column of the database
+        List<String> columnNames = jdbcTemplate.queryForList(
+                "SELECT column_name " +
+                        "FROM information_schema.columns " +
+                        "WHERE table_schema = 'logger_data' " +
+                        "AND table_name = 'datapoint'",
+                String.class
+        );
+
+        if (!columnNames.contains(dataSource)) {
+            throw new IllegalArgumentException("Requested dataSource is not a valid column of the database");
+        }
 
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override
