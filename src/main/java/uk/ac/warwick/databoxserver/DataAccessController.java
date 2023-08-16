@@ -45,18 +45,34 @@ public class DataAccessController {
      * Returns a list of all datasets stored in the database.
      * @return list of all datasets stored in the database
      */
-    @GetMapping("/datasets")
-    public ResponseEntity<ArrayList<Dataset>> getDatasetNames() {
+    @GetMapping("/dataset/all")
+    public ResponseEntity<ArrayList<Dataset>> getAllDatasetMetadata() {
 
         LOGGER.info("Received request for list of datasets");
 
         ArrayList<Dataset> datasets;
 
         //query the database for the list of datasets using the DatasetRepository
-        datasets = (ArrayList<Dataset>) datasetRepository.findDatasets();
+        datasets = (ArrayList<Dataset>) datasetRepository.findAllDatasets();
 
         return ResponseEntity.ok()
                 .body(datasets);
+    }
+
+    @GetMapping("/dataset")
+    public ResponseEntity<?> getDatasetMetadata(
+            @RequestParam @NonNull int datasetId
+    ) {
+
+        LOGGER.info("Received request for dataset '" + datasetId + "'");
+
+        Dataset dataset;
+
+        //query the database for the list of datasets using the DatasetRepository
+        dataset = datasetRepository.findDatasetById(datasetId);
+
+        return ResponseEntity.ok()
+                .body(dataset);
     }
 
     /**
@@ -66,7 +82,10 @@ public class DataAccessController {
      * @return datalog list of records
      */
     @GetMapping("/datalog")
-    public ResponseEntity<?> getDatalog(@RequestParam @NonNull int datasetId, @RequestParam @NonNull String dataSource) {
+    public ResponseEntity<?> getDatalog(
+            @RequestParam @NonNull int datasetId,
+            @RequestParam @NonNull String dataSource
+    ) {
 
         LOGGER.info("Received request for datalog of dataset '" + datasetId + "' and dataSource: " + dataSource);
 

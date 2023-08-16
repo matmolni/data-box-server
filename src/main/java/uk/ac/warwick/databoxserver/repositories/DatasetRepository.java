@@ -54,11 +54,26 @@ public class DatasetRepository {
         return keyHolder.getKey().intValue();
     }
 
+    public void saveDuration (int datasetId, long duration) {
+        jdbcTemplate.update(new PreparedStatementCreator() {
+            @Override
+            @NonNull
+            public PreparedStatement createPreparedStatement(@NonNull Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(
+                        "UPDATE logger_data.dataset SET duration = ? WHERE identifier = ?"
+                );
+                ps.setLong(1, duration);
+                ps.setInt(2, datasetId);
+                return ps;
+            }
+        });
+    }
+
     /**
      * Returns a list of all datasets stored in the database.
      * return list of all datasets stored in the database
      */
-    public List<Dataset> findDatasets() {
+    public List<Dataset> findAllDatasets() {
 
         //prepared statement to query every dataset
         PreparedStatementCreator psc = new PreparedStatementCreator() {
@@ -81,6 +96,7 @@ public class DatasetRepository {
                 dataset.setSessionName(rs.getString("session_name"));
                 dataset.setDescription(rs.getString("description"));
                 dataset.setTimestamp(rs.getTimestamp("timestamp"));
+                dataset.setDuration(rs.getLong("duration"));
 
                 return dataset;
             }
@@ -88,5 +104,49 @@ public class DatasetRepository {
 
         //execute the query and return the resulting list of datasets
         return jdbcTemplate.query(psc, rm);
+    }
+
+    /**
+     * Returns a dataset with the given id.
+     *
+     */
+    public Dataset findDatasetById(int datasetId) {
+
+        //prepared statement to query the dataset with the given id
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(
+                        "SELECT DISTINCT * FROM logger_data.dataset WHERE identifier = ?"
+                );
+                ps.setInt(1, datasetId);
+                return ps;
+            }
+        };
+
+        //row mapper to map the result set to a dataset
+        RowMapper<Dataset> rm = new RowMapper<Dataset>() {
+            @Override
+            public Dataset mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Dataset dataset = new Dataset();
+
+                dataset.setIdentifier(rs.getInt("identifier"));
+                dataset.setSessionName(rs.getString("session_name"));
+                dataset.setDescription(rs.getString("description"));
+                dataset.setTimestamp(rs.getTimestamp("timestamp"));
+                dataset.setDuration(rs.getLong("duration"));
+
+                return dataset;
+            }
+        };
+
+        //execute the query and return the resulting dataset
+        List<Dataset> datasetResult = jdbcTemplate.query(psc, rm);
+
+        if (datasetResult.isEmpty()) {
+            return null;
+        } else {
+            return datasetResult.get(0);
+        }
     }
 }

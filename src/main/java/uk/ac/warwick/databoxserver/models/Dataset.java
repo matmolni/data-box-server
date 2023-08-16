@@ -9,6 +9,8 @@ public class Dataset {
     private String description;
     private Timestamp timestamp;
 
+    private Long duration;
+
     public Dataset() {
 
     }
@@ -43,5 +45,13 @@ public class Dataset {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }

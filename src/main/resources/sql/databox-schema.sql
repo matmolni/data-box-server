@@ -7,7 +7,8 @@ CREATE TABLE logger_data.dataset
     identifier   SERIAL PRIMARY KEY,
     session_name TEXT,
     description  TEXT,
-    timestamp    TIMESTAMP
+    timestamp    TIMESTAMP,
+    duration     BIGINT
 );
 
 CREATE TABLE logger_data.datapoint

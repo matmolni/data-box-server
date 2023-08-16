@@ -77,6 +77,8 @@ public class UploadController {
             // table
             int datasetId = datasetRepo.save(dataset);
 
+            long duration = 0;
+
             // create a CSVFormat object with the required parameters
             CSVFormat format = CSVFormat.Builder
                     .create()
@@ -107,6 +109,9 @@ public class UploadController {
                     LOGGER.warning("Timestamp not found in CSV file");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CSV file does not contain a timestamp");
                 }
+
+                //duration of the session
+                duration = Long.parseLong(record.get("relativeTimestamp"));
 
                 //recorded data points parsed from the CSV
                 if (record.isMapped("lap"))
@@ -172,6 +177,9 @@ public class UploadController {
 
                 datapointRepo.save(datapoint);
             }
+
+            //update the dataset metadata with the duration of the session
+            datasetRepo.saveDuration(datasetId, duration);
 
             //log successful save
             LOGGER.info("Saved dataset to database");
