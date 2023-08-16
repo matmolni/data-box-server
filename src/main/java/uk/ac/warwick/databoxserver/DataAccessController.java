@@ -15,6 +15,7 @@ import uk.ac.warwick.databoxserver.repositories.DatapointRepository;
 import uk.ac.warwick.databoxserver.repositories.DatasetRepository;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * This controller is used to access the data files stored in the /resources/data directory.
@@ -25,6 +26,9 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/data")
 public class DataAccessController {
+
+    //add logging
+    private static final Logger LOGGER = Logger.getLogger(DataAccessController.class.getName());
 
     private final DatasetRepository datasetRepository;
     private final DatapointRepository datapointRepository;
@@ -43,6 +47,9 @@ public class DataAccessController {
      */
     @GetMapping("/datasets")
     public ResponseEntity<ArrayList<Dataset>> getDatasetNames() {
+
+        LOGGER.info("Received request for list of datasets");
+
         ArrayList<Dataset> datasets;
 
         //query the database for the list of datasets using the DatasetRepository
@@ -59,8 +66,9 @@ public class DataAccessController {
      * @return datalog list of records
      */
     @GetMapping("/datalog")
-    public ResponseEntity<?> getDatalog(@RequestParam @NonNull int datasetId,
-                                                               @RequestParam @NonNull String dataSource) {
+    public ResponseEntity<?> getDatalog(@RequestParam @NonNull int datasetId, @RequestParam @NonNull String dataSource) {
+
+        LOGGER.info("Received request for datalog of dataset '" + datasetId + "' and dataSource: " + dataSource);
 
         ArrayList<DatalogRecord> datalogRecord;
 

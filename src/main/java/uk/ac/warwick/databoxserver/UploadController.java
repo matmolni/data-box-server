@@ -55,6 +55,8 @@ public class UploadController {
     @PostMapping("/upload-csv")
     public ResponseEntity<String> uploadCSVFile(@RequestParam("dataset-csv") MultipartFile file) {
 
+        LOGGER.info("Received request to upload CSV file");
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
 
             //read the first 2 lines of the CSV file metadata
