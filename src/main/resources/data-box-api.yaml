@@ -1,0 +1,102 @@
+openapi: 3.0.0
+info:
+  title: DataBox Server API
+  version: 1.0.0
+  description: API for uploading and accessing data files.
+
+servers:
+  - url: 'http://localhost:8080' # Assuming the default Spring Boot port
+
+paths:
+  /upload-csv:
+    post:
+      summary: Upload a CSV file
+      description: Receives a CSV file from the frontend and parses it into the database.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                dataset-csv:
+                  type: string
+                  format: binary
+                  description: The CSV file to be parsed and saved.
+      responses:
+        '200':
+          description: CSV file processed successfully
+        '400':
+          description: CSV file does not contain a timestamp
+        '500':
+          description: Failed to process CSV file
+
+  /data/dataset/all:
+    get:
+      summary: Get all datasets metadata
+      description: Returns a list of all datasets stored in the database.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dataset'
+
+  /data/dataset:
+    get:
+      summary: Get specific dataset metadata
+      description: Returns metadata for a specific dataset based on its ID.
+      parameters:
+        - name: datasetId
+          in: query
+          required: true
+          description: ID of the dataset to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+
+  /data/datalog:
+    get:
+      summary: Get datalog for a specific dataset and datasource
+      description: Returns a list corresponding to one datasource of each datapoint in the specified dataset.
+      parameters:
+        - name: datasetId
+          in: query
+          required: true
+          description: ID of the dataset to get datapoints from.
+          schema:
+            type: integer
+        - name: dataSource
+          in: query
+          required: true
+          description: Datasource to get datapoints from.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatalogRecord'
+        '400':
+          description: Invalid dataSource
+
+components:
+  schemas:
+    Dataset:
+      type: object
+      properties:
+    DatalogRecord:
+      type: object
+      properties:
